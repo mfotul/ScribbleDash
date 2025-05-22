@@ -23,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.scribbledash.R
-import com.example.scribbledash.ui.theme.MutedTaupe
 import com.example.scribbledash.ui.theme.ScribbleDashTheme
 
 @Composable
@@ -48,7 +47,7 @@ fun DifficultyScreen(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.icon_cancel),
-                    tint = MutedTaupe,
+                    tint = MaterialTheme.colorScheme.onSurface,
                     contentDescription = stringResource(R.string.close),
                 )
             }
@@ -60,12 +59,12 @@ fun DifficultyScreen(
             ) {
                 Text(
                     text = stringResource(R.string.start_drawing),
-                    style = MaterialTheme.typography.displayLarge,
+                    style = MaterialTheme.typography.displayMedium,
 
                     )
                 Text(
                     text = stringResource(R.string.select_difficulty),
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
 
                     )
                 Box(
@@ -124,10 +123,11 @@ fun ImageWithLabel(
         )
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.labelMedium,
         )
     }
 }
+
 
 @Composable
 @Preview(showBackground = true)

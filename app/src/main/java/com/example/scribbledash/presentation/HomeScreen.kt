@@ -21,8 +21,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.scribbledash.R
-import com.example.scribbledash.ui.theme.MediumAquamarine
 import com.example.scribbledash.ui.theme.ScribbleDashTheme
+import com.example.scribbledash.ui.theme.success
 
 @Composable
 fun HomeScreen(
@@ -39,22 +39,22 @@ fun HomeScreen(
         ) {
             Text(
                 text = stringResource(R.string.app_name),
-                style = MaterialTheme.typography.displayMedium,
+                style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 16.dp)
             )
         }
         Spacer(modifier = Modifier.height(128.dp))
         Text(
             text = stringResource(R.string.start_drawing),
-            style = MaterialTheme.typography.displayLarge,
+            style = MaterialTheme.typography.displayMedium,
         )
         Text(
             text = stringResource(R.string.select_game_mode),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.bodyMedium,
         )
 
         Card(
-            border = BorderStroke(8.dp, MediumAquamarine),
+            border = BorderStroke(8.dp, MaterialTheme.colorScheme.success),
             modifier = Modifier
                 .padding(16.dp)
                 .clickable(
@@ -67,7 +67,7 @@ fun HomeScreen(
             ) {
                 Text(
                     text = stringResource(R.string.one_round_wonder),
-                    style = MaterialTheme.typography.displayMedium,
+                    style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier
                         .weight(1f)
                         .padding(start = 22.dp)

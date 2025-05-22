@@ -2,7 +2,6 @@ package com.example.scribbledash.presentation
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,7 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.example.scribbledash.R
-import com.example.scribbledash.ui.theme.MutedTaupe
 import com.example.scribbledash.ui.theme.ScribbleDashTheme
 import kotlin.math.abs
 
@@ -64,7 +63,7 @@ fun DrawScreen(
         ) {
             Icon(
                 painter = painterResource(R.drawable.icon_cancel),
-                tint = MutedTaupe,
+                tint = MaterialTheme.colorScheme.onSurface,
                 contentDescription = stringResource(R.string.close),
             )
         }
@@ -72,24 +71,20 @@ fun DrawScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .align(Alignment.Center)
+                .padding(horizontal = 16.dp)
         ) {
             Text(
                 text = stringResource(R.string.time_to_draw),
-                style = MaterialTheme.typography.displayLarge,
+                style = MaterialTheme.typography.displayMedium,
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Box(
+            Box (
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(RoundedCornerShape(8.dp))
-                    .border(
-                        width = 1.dp,
-                        color = MutedTaupe,
-                        shape = RoundedCornerShape(8.dp)
-                    )
+                    .clip(RoundedCornerShape(36.dp))
                     .background(Color.White)
-            ) {
+            ){
                 CanvasBackground()
                 Canvas(
                     modifier = Modifier
@@ -139,46 +134,6 @@ fun DrawScreen(
     }
 }
 
-@Composable
-fun CanvasBackground() {
-    Canvas(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
-
-        // Calculate the size of each square
-        val squareWidth = canvasWidth / 3
-        val squareHeight = canvasHeight / 3
-
-        // Define the color for the grid lines
-        val lineColor = MutedTaupe
-        val strokeWidth = 1.dp.toPx() // Convert dp to pixels for stroke width
-
-        // Draw horizontal lines
-        for (i in 1 until 3) {
-            val y = i * squareHeight
-            drawLine(
-                color = lineColor,
-                start = Offset(0f, y),
-                end = Offset(canvasWidth, y),
-                strokeWidth = strokeWidth
-            )
-        }
-
-        // Draw vertical lines
-        for (i in 1 until 3) {
-            val x = i * squareWidth
-            drawLine(
-                color = lineColor,
-                start = Offset(x, 0f),
-                end = Offset(x, canvasHeight),
-                strokeWidth = strokeWidth
-            )
-        }
-    }
-}
-
 private fun DrawScope.drawPath(
     path: List<Offset>,
     color: Color,
@@ -214,6 +169,47 @@ private fun DrawScope.drawPath(
             join = StrokeJoin.Round
         )
     )
+}
+
+@Composable
+fun CanvasBackground() {
+    val lineColor = MaterialTheme.colorScheme.background
+    Canvas(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val canvasWidth = size.width
+        val canvasHeight = size.height
+
+        // Calculate the size of each square
+        val squareWidth = canvasWidth / 3
+        val squareHeight = canvasHeight / 3
+
+        // Define the color for the grid lines
+
+        val strokeWidth = 1.dp.toPx() // Convert dp to pixels for stroke width
+
+        // Draw horizontal lines
+        for (i in 1 until 3) {
+            val y = i * squareHeight
+            drawLine(
+                color = lineColor,
+                start = Offset(0f, y),
+                end = Offset(canvasWidth, y),
+                strokeWidth = strokeWidth
+            )
+        }
+
+        // Draw vertical lines
+        for (i in 1 until 3) {
+            val x = i * squareWidth
+            drawLine(
+                color = lineColor,
+                start = Offset(x, 0f),
+                end = Offset(x, canvasHeight),
+                strokeWidth = strokeWidth
+            )
+        }
+    }
 }
 
 @Composable
