@@ -1,4 +1,4 @@
-package com.example.scribbledash.presentation
+package com.example.scribbledash.presentation.draw.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

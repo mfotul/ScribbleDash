@@ -1,6 +1,5 @@
-package com.example.scribbledash.presentation
+package com.example.scribbledash.presentation.draw
 
-import androidx.compose.runtime.Stable
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
@@ -8,12 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-@Stable
-data class DrawingState(
-    val currentPath: PathData? = null,
-    val undoPaths: List<PathData> = emptyList(),
-    val paths: List<PathData> = emptyList()
-)
 
 data class PathData(
     val id: String,
@@ -21,19 +14,11 @@ data class PathData(
     val path: List<Offset>
 )
 
-sealed interface DrawingAction {
-    data object OnNewPathStart : DrawingAction
-    data class OnDraw(val offset: Offset) : DrawingAction
-    data object OnPathEnd : DrawingAction
-    data object OnClearCanvas : DrawingAction
-    data object OnUndo : DrawingAction
-    data object OnRedo : DrawingAction
-}
-
 class DrawViewModel : ViewModel() {
 
     private val _state = MutableStateFlow(DrawingState())
     val state = _state.asStateFlow()
+
 
     fun onAction(action: DrawingAction) {
         when (action) {
@@ -43,6 +28,24 @@ class DrawViewModel : ViewModel() {
             DrawingAction.OnPathEnd -> onPathEnd()
             DrawingAction.OnRedo -> onRedo()
             DrawingAction.OnUndo -> onUndo()
+            DrawingAction.OnPreviewFalse -> onPreviewFalse()
+            is DrawingAction.onSetCanvas -> onSetCanvas(action.canvas)
+        }
+    }
+
+    private fun onSetCanvas(canvas: Int) {
+        _state.update {
+            it.copy(
+                canvasExample = canvas
+            )
+        }
+    }
+
+    private fun onPreviewFalse() {
+        _state.update {
+            it.copy(
+                isPreview = false
+            )
         }
     }
 
@@ -106,8 +109,9 @@ class DrawViewModel : ViewModel() {
             it.copy(
                 currentPath = PathData(
                     id = System.currentTimeMillis().toString(),
-                    path = emptyList()
-                )
+                    path = emptyList(),
+                ),
+                undoPaths = emptyList()
             )
         }
     }

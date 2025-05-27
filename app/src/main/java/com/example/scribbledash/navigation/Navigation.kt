@@ -1,4 +1,4 @@
-package com.example.scribbledash
+package com.example.scribbledash.navigation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.padding
@@ -19,10 +19,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.scribbledash.R
+import com.example.scribbledash.data.canvasList
 import com.example.scribbledash.presentation.DifficultyScreen
-import com.example.scribbledash.presentation.DrawScreen
-import com.example.scribbledash.presentation.DrawViewModel
+import com.example.scribbledash.presentation.draw.DrawScreen
+import com.example.scribbledash.presentation.draw.DrawViewModel
 import com.example.scribbledash.presentation.HomeScreen
+import com.example.scribbledash.presentation.draw.DrawingAction
 import kotlinx.serialization.Serializable
 
 data class BottomNavigationItem(
@@ -94,10 +97,19 @@ fun Navigation() {
                     paths = state.paths,
                     undoPaths = state.undoPaths,
                     currentPath = state.currentPath,
+                    isPreview = state.isPreview,
+                    canvasExample = state.canvasExample,
                     onAction = viewModel::onAction,
-                    onCloseClick = { navController.navigate(Home) { popUpTo(Home) { inclusive = true } } },
+                    onCloseClick = {
+                        navController.navigate(Home) {
+                            popUpTo(Home) {
+                                inclusive = true
+                            }
+                        }
+                    },
                     modifier = Modifier.padding(padding)
                 )
+
             }
         }
     }

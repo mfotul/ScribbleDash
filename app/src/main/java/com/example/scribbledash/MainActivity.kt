@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.example.scribbledash.navigation.Navigation
 import com.example.scribbledash.ui.theme.ScribbleDashTheme
 
 class MainActivity : ComponentActivity() {

@@ -12,4 +12,10 @@
     <string name="redo">redo</string>
     <string name="clear_canvas">CLEAR CANVAS</string>
     <string name="time_to_draw">Time to draw!</string>
+    <string name="ready_set">Ready, set…</string>
+    <string name="example">Example</string>
+    <plurals name="seconds_remaining">
+        <item quantity="one">%d second left</item>
+        <item quantity="other">%d seconds left</item>
+    </plurals>
 </resources>

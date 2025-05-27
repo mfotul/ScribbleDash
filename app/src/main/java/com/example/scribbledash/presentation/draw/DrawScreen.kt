@@ -1,28 +1,27 @@
-package com.example.scribbledash.presentation
+package com.example.scribbledash.presentation.draw
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -32,12 +31,16 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import com.example.scribbledash.R
+import com.example.scribbledash.presentation.draw.components.DrawScreenBottomBar
+import com.example.scribbledash.presentation.draw.components.DrawScreenMain
 import com.example.scribbledash.ui.theme.ScribbleDashTheme
+import kotlinx.coroutines.delay
 import kotlin.math.abs
 
 @Composable
@@ -45,6 +48,8 @@ fun DrawScreen(
     paths: List<PathData>,
     undoPaths: List<PathData>,
     currentPath: PathData?,
+    isPreview: Boolean,
+    @DrawableRes canvasExample:  Int,
     onAction: (DrawingAction) -> Unit,
     onCloseClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -52,6 +57,15 @@ fun DrawScreen(
 
     val isUndoEnabled = remember(paths) { derivedStateOf { paths.isNotEmpty() } }
     val isRedoEnabled = remember(undoPaths) { derivedStateOf { undoPaths.isNotEmpty() } }
+    var seconds by remember { mutableIntStateOf(3) }
+
+    LaunchedEffect(seconds) {
+        if (seconds > 0) {
+            delay(1000L)
+            seconds--
+        } else
+            onAction(DrawingAction.OnPreviewFalse)
+    }
 
     Box(
         modifier = modifier.fillMaxSize()
@@ -67,29 +81,51 @@ fun DrawScreen(
                 contentDescription = stringResource(R.string.close),
             )
         }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(horizontal = 16.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.time_to_draw),
-                style = MaterialTheme.typography.displayMedium,
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Box (
+
+        if (isPreview) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(36.dp))
-                    .background(Color.White)
-            ){
-                CanvasBackground()
+                    .align(Alignment.Center)
+                    .offset(y= (-60).dp)
+            ) {
+                DrawScreenMain(
+                    text = stringResource(R.string.ready_set),
+                ) {
+                    Image(
+                        painter = painterResource(canvasExample),
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize()
+                    )
+
+                }
+                Text(
+                    text = stringResource(R.string.example),
+                    style = MaterialTheme.typography.labelSmall,
+                )
+            }
+            val countDownText = pluralStringResource(
+                id = R.plurals.seconds_remaining,
+                count = seconds,
+                seconds
+            )
+            Text(
+                text = countDownText,
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 80.dp)
+            )
+        } else {
+            DrawScreenMain(
+                text = stringResource(R.string.time_to_draw),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .offset(y= (-60).dp)
+            ) {
                 Canvas(
                     modifier = Modifier
                         .fillMaxSize()
-                        .clipToBounds()
                         .pointerInput(true) {
                             detectDragGestures(
                                 onDragStart = {
@@ -121,16 +157,17 @@ fun DrawScreen(
                     }
                 }
             }
+
+            DrawScreenBottomBar(
+                onUndoClick = { onAction(DrawingAction.OnUndo) },
+                onRedoClick = { onAction(DrawingAction.OnRedo) },
+                onClearCanvasClick = { onAction(DrawingAction.OnClearCanvas) },
+                isUndoEnabled = isUndoEnabled.value,
+                isRedoEnabled = isRedoEnabled.value,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
 
-        DrawScreenBottomBar(
-            onUndoClick = { onAction(DrawingAction.OnUndo) },
-            onRedoClick = { onAction(DrawingAction.OnRedo) },
-            onClearCanvasClick = { onAction(DrawingAction.OnClearCanvas) },
-            isUndoEnabled = isUndoEnabled.value,
-            isRedoEnabled = isRedoEnabled.value,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
     }
 }
 
@@ -172,47 +209,6 @@ private fun DrawScope.drawPath(
 }
 
 @Composable
-fun CanvasBackground() {
-    val lineColor = MaterialTheme.colorScheme.background
-    Canvas(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val canvasWidth = size.width
-        val canvasHeight = size.height
-
-        // Calculate the size of each square
-        val squareWidth = canvasWidth / 3
-        val squareHeight = canvasHeight / 3
-
-        // Define the color for the grid lines
-
-        val strokeWidth = 1.dp.toPx() // Convert dp to pixels for stroke width
-
-        // Draw horizontal lines
-        for (i in 1 until 3) {
-            val y = i * squareHeight
-            drawLine(
-                color = lineColor,
-                start = Offset(0f, y),
-                end = Offset(canvasWidth, y),
-                strokeWidth = strokeWidth
-            )
-        }
-
-        // Draw vertical lines
-        for (i in 1 until 3) {
-            val x = i * squareWidth
-            drawLine(
-                color = lineColor,
-                start = Offset(x, 0f),
-                end = Offset(x, canvasHeight),
-                strokeWidth = strokeWidth
-            )
-        }
-    }
-}
-
-@Composable
 @Preview(showBackground = true)
 fun DrawScreenPreview() {
     ScribbleDashTheme {
@@ -220,6 +216,8 @@ fun DrawScreenPreview() {
             paths = emptyList(),
             undoPaths = emptyList(),
             currentPath = null,
+            isPreview = true,
+            canvasExample = R.drawable.whale,
             onAction = {},
             onCloseClick = {}
         )
